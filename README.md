@@ -76,6 +76,23 @@ The app requires a PostgreSQL connection before dashboard pages can load.
    - `git branch -M main`
    - `git push -u origin main`
 
+### Auto Push After Every Commit
+- This project is configured locally with a `post-commit` git hook.
+- Result: every successful `git commit` will automatically run `git push origin <current-branch>`.
+- Skip one time (if needed):
+  - PowerShell: `$env:SKIP_AUTO_PUSH=1; git commit -m "message"`
+
+### Auto Commit + Auto Push Watcher (Optional)
+- Start watcher:
+  - `npm run watch:auto-sync`
+- Behavior:
+  - Watches `src/` changes
+  - Debounces edits for ~2.5 seconds
+  - Runs `git add -A` -> `git commit` -> `git push origin <current-branch>`
+- Notes:
+  - Stop watcher with `Ctrl+C`
+  - Use only when you are sure frequent auto-commits fit your workflow
+
 ### B) Deploy on Vercel (recommended for Next.js)
 1. Import repository in Vercel dashboard.
 2. Add environment variables from `.env`.

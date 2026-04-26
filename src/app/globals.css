@@ -31,3 +31,11 @@
 body {
   @apply bg-background text-foreground antialiased;
 }
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  height: auto;
+}
