@@ -1,6 +1,8 @@
 import { IncomePaymentForm } from "@/components/forms/income-payment-form";
 import { Card } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
+import { getLang } from "@/i18n/server";
+import { t } from "@/i18n/translations";
 import { getInvoicesWithPaymentsFiltered } from "@/server/queries/operations";
 
 export const dynamic = "force-dynamic";
@@ -23,6 +25,7 @@ type IncomePageProps = {
 };
 
 export default async function IncomePage({ searchParams }: IncomePageProps) {
+  const lang = getLang();
   const status = searchParams?.status ?? "ALL";
   const query = searchParams?.query ?? "";
   const sort = searchParams?.sort ?? "dueDateAsc";
@@ -47,15 +50,15 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
   return (
     <div className="space-y-4">
       <Card>
-        <h2 className="mb-2 text-lg font-semibold">Income Tracking</h2>
-        <p className="text-sm text-muted-foreground">Track monthly rent invoices, payment status, and deposits.</p>
+        <h2 className="mb-2 text-lg font-semibold">{t(lang, "income.title")}</h2>
+        <p className="text-sm text-muted-foreground">{t(lang, "income.subtitle")}</p>
         <form className="mt-3 grid gap-2 md:grid-cols-5">
           <select
             name="status"
             defaultValue={status}
             className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm"
           >
-            <option value="ALL">All status</option>
+            <option value="ALL">{t(lang, "income.filterStatusAll")}</option>
             <option value="PENDING">PENDING</option>
             <option value="PARTIAL">PARTIAL</option>
             <option value="PAID">PAID</option>
@@ -64,7 +67,7 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
           <input
             name="query"
             defaultValue={query}
-            placeholder="Search room or tenant"
+            placeholder={t(lang, "income.search")}
             className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm md:col-span-2"
           />
           <select
@@ -72,19 +75,19 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
             defaultValue={sort}
             className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm"
           >
-            <option value="dueDateAsc">Due date: Oldest</option>
-            <option value="dueDateDesc">Due date: Newest</option>
-            <option value="amountAsc">Amount: Low to high</option>
-            <option value="amountDesc">Amount: High to low</option>
+            <option value="dueDateAsc">{t(lang, "income.sortOldest")}</option>
+            <option value="dueDateDesc">{t(lang, "income.sortNewest")}</option>
+            <option value="amountAsc">{t(lang, "income.sortAmountAsc")}</option>
+            <option value="amountDesc">{t(lang, "income.sortAmountDesc")}</option>
           </select>
-          <button className="rounded-lg bg-accent px-3 py-2 text-sm text-accent-foreground">Apply</button>
+          <button className="rounded-lg bg-accent px-3 py-2 text-sm text-accent-foreground">{t(lang, "common.apply")}</button>
         </form>
       </Card>
-      <IncomePaymentForm invoices={invoiceOptions} />
+      <IncomePaymentForm invoices={invoiceOptions} lang={lang} />
       <Card>
         <div className="space-y-2">
           {invoices.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No invoices yet.</p>
+            <p className="text-sm text-muted-foreground">{t(lang, "income.empty")}</p>
           ) : null}
           {invoices.map((invoice) => {
             const paid = invoice.payments.reduce((sum, p) => sum + Number(p.paidAmount), 0);
@@ -94,10 +97,10 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
                   {invoice.room.roomNumber} - {invoice.tenant.fullName}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Due {new Date(invoice.dueDate).toLocaleDateString()} | Status: {invoice.status}
+                  {t(lang, "income.due")} {new Date(invoice.dueDate).toLocaleDateString()} | Status: {invoice.status}
                 </p>
                 <p className="text-sm">
-                  {formatMoney(Number(invoice.amount))} | Paid: {formatMoney(paid)}
+                  {formatMoney(Number(invoice.amount))} | {t(lang, "income.paid")}: {formatMoney(paid)}
                 </p>
               </div>
             );
@@ -107,6 +110,7 @@ export default async function IncomePage({ searchParams }: IncomePageProps) {
           page={data.page}
           total={data.total}
           pageSize={data.pageSize}
+          lang={lang}
           buildHref={(targetPage) =>
             `?status=${encodeURIComponent(status)}&query=${encodeURIComponent(query)}&sort=${encodeURIComponent(sort)}&page=${targetPage}`
           }

@@ -2,6 +2,8 @@
 
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card } from "@/components/ui/card";
+import type { Lang } from "@/i18n/translations";
+import { t } from "@/i18n/translations";
 
 type DataPoint = {
   month: string;
@@ -9,10 +11,10 @@ type DataPoint = {
   expense: number;
 };
 
-export function IncomeExpenseChart({ data }: { data: DataPoint[] }) {
+export function IncomeExpenseChart({ data, lang }: { data: DataPoint[]; lang: Lang }) {
   return (
     <Card className="h-[320px]">
-      <p className="mb-3 text-sm text-muted-foreground">Income vs Expense</p>
+      <p className="mb-3 text-sm text-muted-foreground">{t(lang, "dashboard.incomeVsExpense")}</p>
       <ResponsiveContainer width="100%" height="90%">
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />

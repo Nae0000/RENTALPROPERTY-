@@ -3,12 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import type { Lang } from "@/i18n/translations";
+import { t } from "@/i18n/translations";
 
 type RoomCreateFormProps = {
   propertyId: string | null;
+  lang: Lang;
 };
 
-export function RoomCreateForm({ propertyId }: RoomCreateFormProps) {
+export function RoomCreateForm({ propertyId, lang }: RoomCreateFormProps) {
   const router = useRouter();
   const [roomNumber, setRoomNumber] = useState("");
   const [monthlyRent, setMonthlyRent] = useState(0);
@@ -19,15 +22,15 @@ export function RoomCreateForm({ propertyId }: RoomCreateFormProps) {
 
   async function onSubmit() {
     if (!propertyId) {
-      setError("No property found. Please create a property first.");
+      setError(t(lang, "rooms.noProperty"));
       return;
     }
     if (!roomNumber.trim()) {
-      setError("Room number is required.");
+      setError(t(lang, "rooms.requiredRoomNo"));
       return;
     }
     if (monthlyRent <= 0) {
-      setError("Monthly rent must be greater than zero.");
+      setError(t(lang, "rooms.invalidRent"));
       return;
     }
 
@@ -48,16 +51,16 @@ export function RoomCreateForm({ propertyId }: RoomCreateFormProps) {
       });
       const payload = await response.json();
       if (!response.ok) {
-        setError(payload?.error?.message ?? "Create room failed.");
+        setError(payload?.error?.message ?? t(lang, "rooms.createError"));
       } else {
-        setMessage("Room created successfully.");
+        setMessage(t(lang, "rooms.created"));
         setRoomNumber("");
         setMonthlyRent(0);
         setStatus("VACANT");
         router.refresh();
       }
     } catch {
-      setError("Network error.");
+      setError(t(lang, "rooms.createError"));
     } finally {
       setLoading(false);
     }
@@ -65,19 +68,19 @@ export function RoomCreateForm({ propertyId }: RoomCreateFormProps) {
 
   return (
     <div className="space-y-2 rounded-lg border border-border p-3">
-      <p className="font-medium">Create Room</p>
+      <p className="font-medium">{t(lang, "rooms.createTitle")}</p>
       <div className="grid gap-2 md:grid-cols-3">
         <input
           value={roomNumber}
           onChange={(event) => setRoomNumber(event.target.value)}
-          placeholder="Room number"
+          placeholder={t(lang, "rooms.roomNumber")}
           className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm"
         />
         <input
           type="number"
           value={monthlyRent}
           onChange={(event) => setMonthlyRent(Number(event.target.value))}
-          placeholder="Monthly rent"
+          placeholder={t(lang, "rooms.monthlyRent")}
           className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm"
         />
         <select
@@ -85,13 +88,13 @@ export function RoomCreateForm({ propertyId }: RoomCreateFormProps) {
           onChange={(event) => setStatus(event.target.value)}
           className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm"
         >
-          <option value="VACANT">VACANT</option>
-          <option value="OCCUPIED">OCCUPIED</option>
-          <option value="MAINTENANCE">MAINTENANCE</option>
+          <option value="VACANT">{t(lang, "rooms.status.vacant")}</option>
+          <option value="OCCUPIED">{t(lang, "rooms.status.occupied")}</option>
+          <option value="MAINTENANCE">{t(lang, "rooms.status.maintenance")}</option>
         </select>
       </div>
       <Button onClick={onSubmit} disabled={loading || !propertyId}>
-        {loading ? "Creating..." : "Create Room"}
+        {loading ? t(lang, "rooms.creating") : t(lang, "rooms.create")}
       </Button>
       {message ? <p className="text-sm text-emerald-500">{message}</p> : null}
       {error ? <p className="text-sm text-rose-500">{error}</p> : null}

@@ -3,8 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import type { Lang } from "@/i18n/translations";
+import { t } from "@/i18n/translations";
 
-export function CalendarEventForm() {
+export function CalendarEventForm({ lang }: { lang: Lang }) {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [eventType, setEventType] = useState("RENT_DUE");
@@ -16,11 +18,11 @@ export function CalendarEventForm() {
 
   async function onSubmit() {
     if (!title.trim()) {
-      setError("Event title is required.");
+      setError(t(lang, "calendar.titleRequired"));
       return;
     }
     if (!eventDate) {
-      setError("Event date is required.");
+      setError(t(lang, "calendar.dateRequired"));
       return;
     }
     setLoading(true);
@@ -39,14 +41,14 @@ export function CalendarEventForm() {
       });
       const payload = await response.json();
       if (!response.ok) {
-        setError(payload?.error?.message ?? "Create event failed");
+        setError(payload?.error?.message ?? t(lang, "calendar.createFailed"));
       } else {
-        setMessage("Event created");
+        setMessage(t(lang, "calendar.created"));
         setTitle("");
         router.refresh();
       }
     } catch {
-      setError("Network error");
+      setError(t(lang, "income.networkError"));
     } finally {
       setLoading(false);
     }
@@ -54,12 +56,12 @@ export function CalendarEventForm() {
 
   return (
     <div className="space-y-2 rounded-lg border border-border p-3">
-      <p className="font-medium">Add Calendar Event</p>
+      <p className="font-medium">{t(lang, "calendar.addTitle")}</p>
       <input
         className="w-full rounded-lg border border-border bg-transparent px-3 py-2 text-sm"
         value={title}
         onChange={(event) => setTitle(event.target.value)}
-        placeholder="Event title"
+        placeholder={t(lang, "calendar.eventTitle")}
       />
       <div className="grid gap-2 md:grid-cols-3">
         <select
@@ -82,11 +84,11 @@ export function CalendarEventForm() {
           className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm"
           value={status}
           onChange={(event) => setStatus(event.target.value)}
-          placeholder="Status"
+          placeholder={t(lang, "calendar.status")}
         />
       </div>
       <Button onClick={onSubmit} disabled={loading || !title}>
-        {loading ? "Saving..." : "Create Event"}
+        {loading ? t(lang, "income.saving") : t(lang, "calendar.create")}
       </Button>
       {message ? <p className="text-sm text-emerald-500">{message}</p> : null}
       {error ? <p className="text-sm text-rose-500">{error}</p> : null}

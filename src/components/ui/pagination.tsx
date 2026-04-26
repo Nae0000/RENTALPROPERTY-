@@ -1,14 +1,17 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import type { Lang } from "@/i18n/translations";
+import { t } from "@/i18n/translations";
 
 type PaginationProps = {
   page: number;
   total: number;
   pageSize: number;
   buildHref: (targetPage: number) => string;
+  lang: Lang;
 };
 
-export function Pagination({ page, total, pageSize, buildHref }: PaginationProps) {
+export function Pagination({ page, total, pageSize, buildHref, lang }: PaginationProps) {
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const prevPage = Math.max(1, page - 1);
   const nextPage = Math.min(totalPages, page + 1);
@@ -18,7 +21,7 @@ export function Pagination({ page, total, pageSize, buildHref }: PaginationProps
   return (
     <div className="mt-3 flex items-center justify-between text-sm text-muted-foreground">
       <span>
-        Page {page} / {totalPages}
+        {t(lang, "common.page")} {page} / {totalPages}
       </span>
       <div className="flex gap-2">
         <Link
@@ -29,7 +32,7 @@ export function Pagination({ page, total, pageSize, buildHref }: PaginationProps
             !canPrev && "pointer-events-none opacity-40"
           )}
         >
-          Prev
+          {t(lang, "common.prev")}
         </Link>
         <Link
           href={buildHref(nextPage)}
@@ -39,7 +42,7 @@ export function Pagination({ page, total, pageSize, buildHref }: PaginationProps
             !canNext && "pointer-events-none opacity-40"
           )}
         >
-          Next
+          {t(lang, "common.next")}
         </Link>
       </div>
     </div>

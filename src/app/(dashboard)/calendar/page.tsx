@@ -1,6 +1,8 @@
 import { CalendarEventForm } from "@/components/forms/calendar-event-form";
 import { Card } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
+import { getLang } from "@/i18n/server";
+import { t } from "@/i18n/translations";
 import { getCalendarEventsFeedFiltered } from "@/server/queries/operations";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +17,7 @@ type CalendarPageProps = {
 };
 
 export default async function CalendarPage({ searchParams }: CalendarPageProps) {
+  const lang = getLang();
   const type = searchParams?.type ?? "ALL";
   const query = searchParams?.query ?? "";
   const sort = searchParams?.sort ?? "dateAsc";
@@ -29,14 +32,14 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
   return (
     <div className="space-y-4">
       <Card>
-        <h2 className="mb-3 text-lg font-semibold">Calendar</h2>
+        <h2 className="mb-3 text-lg font-semibold">{t(lang, "calendar.title")}</h2>
         <form className="mt-3 grid gap-2 md:grid-cols-5">
           <select
             name="type"
             defaultValue={type}
             className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm"
           >
-            <option value="ALL">All type</option>
+            <option value="ALL">{t(lang, "calendar.filterAll")}</option>
             <option value="RENT_DUE">RENT_DUE</option>
             <option value="LEASE_EXPIRY">LEASE_EXPIRY</option>
             <option value="PAYMENT_RECEIVED">PAYMENT_RECEIVED</option>
@@ -45,7 +48,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
           <input
             name="query"
             defaultValue={query}
-            placeholder="Search title or room"
+            placeholder={t(lang, "calendar.search")}
             className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm md:col-span-2"
           />
           <select
@@ -53,16 +56,16 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
             defaultValue={sort}
             className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm"
           >
-            <option value="dateAsc">Date: Oldest</option>
-            <option value="dateDesc">Date: Newest</option>
+            <option value="dateAsc">{t(lang, "calendar.dateOldest")}</option>
+            <option value="dateDesc">{t(lang, "calendar.dateNewest")}</option>
           </select>
-          <button className="rounded-lg bg-accent px-3 py-2 text-sm text-accent-foreground">Apply</button>
+          <button className="rounded-lg bg-accent px-3 py-2 text-sm text-accent-foreground">{t(lang, "common.apply")}</button>
         </form>
       </Card>
-      <CalendarEventForm />
+      <CalendarEventForm lang={lang} />
       <Card>
         <div className="space-y-2">
-          {events.length === 0 ? <p className="text-sm text-muted-foreground">No events yet.</p> : null}
+          {events.length === 0 ? <p className="text-sm text-muted-foreground">{t(lang, "calendar.empty")}</p> : null}
           {events.map((event) => (
             <div key={event.id} className="rounded-lg border border-border p-3">
               <p className="font-medium">{event.title}</p>
@@ -79,6 +82,7 @@ export default async function CalendarPage({ searchParams }: CalendarPageProps) 
           page={data.page}
           total={data.total}
           pageSize={data.pageSize}
+          lang={lang}
           buildHref={(targetPage) =>
             `?type=${encodeURIComponent(type)}&query=${encodeURIComponent(query)}&sort=${encodeURIComponent(sort)}&page=${targetPage}`
           }

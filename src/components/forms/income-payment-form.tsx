@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import type { Lang } from "@/i18n/translations";
+import { t } from "@/i18n/translations";
 
 type InvoiceOption = {
   id: string;
@@ -11,7 +13,7 @@ type InvoiceOption = {
   dueAmount: number;
 };
 
-export function IncomePaymentForm({ invoices }: { invoices: InvoiceOption[] }) {
+export function IncomePaymentForm({ invoices, lang }: { invoices: InvoiceOption[]; lang: Lang }) {
   const router = useRouter();
   const [invoiceId, setInvoiceId] = useState(invoices[0]?.id ?? "");
   const [paidAmount, setPaidAmount] = useState(invoices[0]?.dueAmount ?? 0);
@@ -22,11 +24,11 @@ export function IncomePaymentForm({ invoices }: { invoices: InvoiceOption[] }) {
 
   async function onSubmit() {
     if (!invoiceId) {
-      setError("Please select an invoice.");
+      setError(t(lang, "income.selectInvoice"));
       return;
     }
     if (paidAmount <= 0) {
-      setError("Paid amount must be greater than zero.");
+      setError(t(lang, "income.amountRequired"));
       return;
     }
     setLoading(true);
@@ -40,13 +42,13 @@ export function IncomePaymentForm({ invoices }: { invoices: InvoiceOption[] }) {
       });
       const payload = await response.json();
       if (!response.ok) {
-        setError(payload?.error?.message ?? "Payment failed");
+        setError(payload?.error?.message ?? t(lang, "income.paymentFailed"));
       } else {
-        setMessage("Payment recorded");
+        setMessage(t(lang, "income.paymentRecorded"));
         router.refresh();
       }
     } catch {
-      setError("Network error");
+      setError(t(lang, "income.networkError"));
     } finally {
       setLoading(false);
     }
@@ -54,7 +56,7 @@ export function IncomePaymentForm({ invoices }: { invoices: InvoiceOption[] }) {
 
   return (
     <div className="space-y-2 rounded-lg border border-border p-3">
-      <p className="font-medium">Mark Payment</p>
+      <p className="font-medium">{t(lang, "income.markPayment")}</p>
       <select
         className="w-full rounded-lg border border-border bg-transparent px-3 py-2 text-sm"
         value={invoiceId}
@@ -71,16 +73,16 @@ export function IncomePaymentForm({ invoices }: { invoices: InvoiceOption[] }) {
         className="w-full rounded-lg border border-border bg-transparent px-3 py-2 text-sm"
         value={paidAmount}
         onChange={(event) => setPaidAmount(Number(event.target.value))}
-        placeholder="Paid amount"
+        placeholder={t(lang, "income.paidAmount")}
       />
       <input
         className="w-full rounded-lg border border-border bg-transparent px-3 py-2 text-sm"
         value={method}
         onChange={(event) => setMethod(event.target.value)}
-        placeholder="Payment method"
+        placeholder={t(lang, "income.paymentMethod")}
       />
       <Button onClick={onSubmit} disabled={loading || !invoiceId}>
-        {loading ? "Saving..." : "Submit Payment"}
+        {loading ? t(lang, "income.saving") : t(lang, "income.submitPayment")}
       </Button>
       {message ? <p className="text-sm text-emerald-500">{message}</p> : null}
       {error ? <p className="text-sm text-rose-500">{error}</p> : null}

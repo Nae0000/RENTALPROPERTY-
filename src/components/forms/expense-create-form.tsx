@@ -3,8 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import type { Lang } from "@/i18n/translations";
+import { t } from "@/i18n/translations";
 
-export function ExpenseCreateForm() {
+export function ExpenseCreateForm({ lang }: { lang: Lang }) {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState(0);
@@ -15,11 +17,11 @@ export function ExpenseCreateForm() {
 
   async function onSubmit() {
     if (!title.trim()) {
-      setError("Title is required.");
+      setError(t(lang, "expenses.titleRequired"));
       return;
     }
     if (amount <= 0) {
-      setError("Amount must be greater than zero.");
+      setError(t(lang, "expenses.amountRequired"));
       return;
     }
     setLoading(true);
@@ -38,15 +40,15 @@ export function ExpenseCreateForm() {
       });
       const payload = await response.json();
       if (!response.ok) {
-        setError(payload?.error?.message ?? "Create expense failed");
+        setError(payload?.error?.message ?? t(lang, "expenses.createFailed"));
       } else {
-        setMessage("Expense created");
+        setMessage(t(lang, "expenses.created"));
         setTitle("");
         setAmount(0);
         router.refresh();
       }
     } catch {
-      setError("Network error");
+      setError(t(lang, "income.networkError"));
     } finally {
       setLoading(false);
     }
@@ -54,19 +56,19 @@ export function ExpenseCreateForm() {
 
   return (
     <div className="space-y-2 rounded-lg border border-border p-3">
-      <p className="font-medium">Add Expense</p>
+      <p className="font-medium">{t(lang, "expenses.addTitle")}</p>
       <input
         className="w-full rounded-lg border border-border bg-transparent px-3 py-2 text-sm"
         value={title}
         onChange={(event) => setTitle(event.target.value)}
-        placeholder="Title"
+        placeholder={t(lang, "expenses.addTitle")}
       />
       <input
         type="number"
         className="w-full rounded-lg border border-border bg-transparent px-3 py-2 text-sm"
         value={amount}
         onChange={(event) => setAmount(Number(event.target.value))}
-        placeholder="Amount"
+        placeholder={t(lang, "rooms.monthlyRent")}
       />
       <select
         className="w-full rounded-lg border border-border bg-transparent px-3 py-2 text-sm"
@@ -80,7 +82,7 @@ export function ExpenseCreateForm() {
         <option value="OTHER">OTHER</option>
       </select>
       <Button onClick={onSubmit} disabled={loading || !title || amount <= 0}>
-        {loading ? "Saving..." : "Create Expense"}
+        {loading ? t(lang, "income.saving") : t(lang, "expenses.create")}
       </Button>
       {message ? <p className="text-sm text-emerald-500">{message}</p> : null}
       {error ? <p className="text-sm text-rose-500">{error}</p> : null}

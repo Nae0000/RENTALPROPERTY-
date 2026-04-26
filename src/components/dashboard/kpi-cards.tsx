@@ -1,10 +1,13 @@
 import { Card } from "@/components/ui/card";
+import type { Lang } from "@/i18n/translations";
+import { t } from "@/i18n/translations";
 
 type KpiCardsProps = {
   totalIncome: number;
   totalExpense: number;
   occupancyRate: number;
   overdueInvoices: number;
+  lang: Lang;
 };
 
 function formatCurrency(value: number) {
@@ -15,12 +18,12 @@ function formatCurrency(value: number) {
   }).format(value);
 }
 
-export function KpiCards({ totalIncome, totalExpense, occupancyRate, overdueInvoices }: KpiCardsProps) {
+export function KpiCards({ totalIncome, totalExpense, occupancyRate, overdueInvoices, lang }: KpiCardsProps) {
   const items = [
-    { title: "Total Income", value: formatCurrency(totalIncome) },
-    { title: "Total Expense", value: formatCurrency(totalExpense) },
-    { title: "Occupancy Rate", value: `${occupancyRate}%` },
-    { title: "Overdue Rooms", value: String(overdueInvoices) }
+    { title: t(lang, "dashboard.totalIncome"), value: formatCurrency(totalIncome) },
+    { title: t(lang, "dashboard.totalExpense"), value: formatCurrency(totalExpense) },
+    { title: t(lang, "dashboard.occupancyRate"), value: `${occupancyRate}%` },
+    { title: t(lang, "dashboard.overdueRooms"), value: String(overdueInvoices) }
   ];
 
   return (

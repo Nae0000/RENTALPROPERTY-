@@ -1,11 +1,14 @@
 import { RoomCreateForm } from "@/components/forms/room-create-form";
 import { RoomCard } from "@/components/rooms/room-card";
 import { Card } from "@/components/ui/card";
+import { getLang } from "@/i18n/server";
+import { t } from "@/i18n/translations";
 import { prisma } from "@/server/prisma";
 
 export const dynamic = "force-dynamic";
 
 export default async function RoomsPage() {
+  const lang = getLang();
   const property = await prisma.property.findFirst({
     where: { deletedAt: null },
     orderBy: { createdAt: "asc" }
@@ -22,20 +25,16 @@ export default async function RoomsPage() {
   return (
     <div className="space-y-4">
       <Card>
-        <h2 className="text-lg font-semibold">Rooms</h2>
-        <p className="text-sm text-muted-foreground">
-          Manage room availability, maintenance status, and current tenant assignment.
-        </p>
+        <h2 className="text-lg font-semibold">{t(lang, "rooms.title")}</h2>
+        <p className="text-sm text-muted-foreground">{t(lang, "rooms.subtitle")}</p>
       </Card>
 
-      <RoomCreateForm propertyId={property?.id ?? null} />
+      <RoomCreateForm propertyId={property?.id ?? null} lang={lang} />
 
       {rooms.length === 0 ? (
         <Card>
-          <p className="font-medium">No rooms found</p>
-          <p className="text-sm text-muted-foreground">
-            Add the first room record from your onboarding flow or create rooms through the Rooms API.
-          </p>
+          <p className="font-medium">{t(lang, "rooms.emptyTitle")}</p>
+          <p className="text-sm text-muted-foreground">{t(lang, "rooms.emptyDesc")}</p>
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -45,6 +44,7 @@ export default async function RoomsPage() {
               roomNumber={room.roomNumber}
               status={room.status}
               tenantName={room.currentTenantName ?? undefined}
+              lang={lang}
             />
           ))}
         </div>
