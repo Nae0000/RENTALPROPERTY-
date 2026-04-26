@@ -2,6 +2,8 @@ import { ReportsSyncButton } from "@/components/forms/reports-sync-button";
 import { Card } from "@/components/ui/card";
 import { getDashboardKpi, getMonthlyTrend } from "@/server/queries/dashboard";
 
+export const dynamic = "force-dynamic";
+
 function formatMoney(value: number) {
   return new Intl.NumberFormat("th-TH", {
     style: "currency",

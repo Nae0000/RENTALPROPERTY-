@@ -1,6 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { getTenantsWithSummary } from "@/server/queries/operations";
 
+export const dynamic = "force-dynamic";
+
 export default async function TenantsPage() {
   const tenants = await getTenantsWithSummary();
   return (

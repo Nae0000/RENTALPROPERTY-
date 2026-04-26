@@ -3,6 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
 import { getInvoicesWithPaymentsFiltered } from "@/server/queries/operations";
 
+export const dynamic = "force-dynamic";
+
 function formatMoney(value: number) {
   return new Intl.NumberFormat("th-TH", {
     style: "currency",

@@ -3,6 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
 import { getCalendarEventsFeedFiltered } from "@/server/queries/operations";
 
+export const dynamic = "force-dynamic";
+
 type CalendarPageProps = {
   searchParams?: {
     type?: string;
