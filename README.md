@@ -83,10 +83,24 @@ The app requires a PostgreSQL connection before dashboard pages can load.
 4. Set Install Command: `npm install` (or `npx pnpm install` if using pnpm lockfile)
 5. Deploy.
 
+Quick CLI flow:
+- `vercel`
+- `vercel env add DATABASE_URL`
+- `vercel env add NEXTAUTH_SECRET`
+- `vercel env add NEXTAUTH_URL`
+- `vercel --prod`
+
 ### C) Deploy via Docker (optional)
 1. Build image: `docker build -t rental-property-webapp .`
 2. Run container with env vars and database access.
 3. Expose app port and run migrations before traffic cutover.
+
+Quick local container flow:
+- `docker compose up -d --build`
+- `docker compose exec app npm run prisma:generate`
+- `docker compose exec app npm run prisma:migrate`
+- `docker compose exec app npm run seed`
+- Open `http://localhost:3000`
 
 ## Product Modules
 - Dashboard overview
