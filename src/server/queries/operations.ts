@@ -18,6 +18,51 @@ export async function getTenantsWithSummary() {
   }
 }
 
+type TenantFilters = {
+  query?: string;
+  page?: number;
+  pageSize?: number;
+};
+
+export async function getTenantsWithSummaryFiltered(filters: TenantFilters) {
+  const page = Math.max(1, filters.page ?? 1);
+  const pageSize = Math.min(50, Math.max(1, filters.pageSize ?? 10));
+  const skip = (page - 1) * pageSize;
+  const query = filters.query?.trim();
+
+  try {
+    const where = {
+      deletedAt: null,
+      ...(query
+        ? {
+            OR: [{ fullName: { contains: query, mode: "insensitive" as const } }, { phone: { contains: query } }]
+          }
+        : {})
+    };
+
+    const [items, total] = await Promise.all([
+      prisma.tenant.findMany({
+        where,
+        include: {
+          documents: true,
+          leases: {
+            where: { status: "ACTIVE" },
+            include: { room: true }
+          }
+        },
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: pageSize
+      }),
+      prisma.tenant.count({ where })
+    ]);
+
+    return { items, total, page, pageSize };
+  } catch {
+    return { items: [], total: 0, page, pageSize };
+  }
+}
+
 export async function getInvoicesWithPayments() {
   try {
     return await prisma.rentInvoice.findMany({
