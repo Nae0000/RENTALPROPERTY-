@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { Prisma } from "@prisma/client";
 import { requireSession } from "@/server/auth";
 import { created, fail, ok } from "@/server/api-response";
 import { prisma } from "@/server/prisma";
@@ -36,6 +37,12 @@ export async function POST(request: NextRequest) {
     return fail("VALIDATION_ERROR", "Invalid tenant payload", 400, parsed.error.flatten());
   }
 
-  const tenant = await prisma.tenant.create({ data: parsed.data });
+  const tenant = await prisma.tenant.create({
+    data: {
+      fullName: parsed.data.fullName,
+      phone: parsed.data.phone,
+      profileData: (parsed.data.profileData as Prisma.InputJsonValue | undefined) ?? Prisma.JsonNull
+    }
+  });
   return created(tenant);
 }

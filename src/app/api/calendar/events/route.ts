@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { CalendarEventType } from "@prisma/client";
+import { CalendarEventType, Prisma } from "@prisma/client";
 import { z } from "zod";
 import { requireSession } from "@/server/auth";
 import { created, fail, ok } from "@/server/api-response";
@@ -42,11 +42,15 @@ export async function POST(request: NextRequest) {
     return fail("VALIDATION_ERROR", "Invalid calendar payload", 400, parsed.error.flatten());
   }
 
-  const event = await prisma.calendarEvent.create({
-    data: {
-      ...parsed.data,
-      eventDate: new Date(parsed.data.eventDate)
-    }
-  });
+  const data: Prisma.CalendarEventUncheckedCreateInput = {
+    roomId: parsed.data.roomId ?? null,
+    title: parsed.data.title,
+    eventType: parsed.data.eventType,
+    eventDate: new Date(parsed.data.eventDate),
+    status: parsed.data.status,
+    metadata: (parsed.data.metadata as Prisma.InputJsonValue | undefined) ?? Prisma.JsonNull
+  };
+
+  const event = await prisma.calendarEvent.create({ data });
   return created(event);
 }
