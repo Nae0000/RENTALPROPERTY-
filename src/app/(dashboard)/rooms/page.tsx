@@ -1,3 +1,4 @@
+import { RoomCreateForm } from "@/components/forms/room-create-form";
 import { RoomCard } from "@/components/rooms/room-card";
 import { Card } from "@/components/ui/card";
 import { prisma } from "@/server/prisma";
@@ -5,6 +6,11 @@ import { prisma } from "@/server/prisma";
 export const dynamic = "force-dynamic";
 
 export default async function RoomsPage() {
+  const property = await prisma.property.findFirst({
+    where: { deletedAt: null },
+    orderBy: { createdAt: "asc" }
+  });
+
   const rooms = await prisma.room
     .findMany({
       where: { deletedAt: null },
@@ -21,6 +27,8 @@ export default async function RoomsPage() {
           Manage room availability, maintenance status, and current tenant assignment.
         </p>
       </Card>
+
+      <RoomCreateForm propertyId={property?.id ?? null} />
 
       {rooms.length === 0 ? (
         <Card>
